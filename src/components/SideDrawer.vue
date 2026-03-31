@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import menuData from '../data/menuData.js'
 import MenuItem from './MenuItem.vue'
 
@@ -8,6 +8,17 @@ const emit = defineEmits(['close'])
 
 const activeKey = ref(null)
 const expandedKeys = ref([])
+
+function findItemByKey(key, nodes) {
+  for (const node of nodes) {
+    if (node.key === key) return node
+    if (node.children) {
+      const found = findItemByKey(key, node.children)
+      if (found) return found
+    }
+  }
+  return null
+}
 
 // 找同層節點（用來收起同層其他展開的項目）
 function findSiblings(key, nodes) {
@@ -43,6 +54,20 @@ function handleToggle(item) {
     expandedKeys.value.push(item.key)
   }
 }
+
+// 將樹狀資料攤平為下拉選單用的列表
+function flattenTree(nodes, depth = 0) {
+  return nodes.flatMap(node => [
+    { key: node.key, text: '　'.repeat(depth) + node.text },
+    ...(node.children ? flattenTree(node.children, depth + 1) : []),
+  ])
+}
+const flatItems = computed(() => flattenTree(menuData))
+
+function handleSelectChange(e) {
+  const item = findItemByKey(e.target.value, menuData)
+  if (item) handleToggle(item)
+}
 </script>
 
 <template>
@@ -57,6 +82,20 @@ function handleToggle(item) {
       <div class="drawer-header">
         <span class="drawer-title">選單</span>
         <button class="drawer-close" @click="emit('close')">✕</button>
+      </div>
+
+      <!-- 下拉選單：包含所有項目，選取等同點擊該項目 -->
+      <div class="select-wrap">
+        <select
+          class="category-select"
+          :value="activeKey || ''"
+          @change="handleSelectChange"
+        >
+          <option value="" disabled>選擇項目</option>
+          <option v-for="item in flatItems" :key="item.key" :value="item.key">
+            {{ item.text }}
+          </option>
+        </select>
       </div>
 
       <!-- 階層選單：遞迴元件，支援任意深度（含 100 層需求） -->
@@ -122,6 +161,23 @@ function handleToggle(item) {
   cursor: pointer;
   padding: 4px;
   line-height: 1;
+}
+
+.select-wrap {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.category-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #2a2a2a;
+  background: #fff;
 }
 
 .drawer-nav {
