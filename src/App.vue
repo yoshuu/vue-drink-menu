@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import BingoGrid from './components/BingoGrid.vue'
 import SideDrawer from './components/SideDrawer.vue'
 
 const drawerOpen = ref(false)
@@ -17,6 +18,12 @@ const drawerOpen = ref(false)
     </header>
 
     <main class="main-content">
+      <section class="grid-section">
+        <h2 class="section-title">今日推薦</h2>
+        <div class="grid-container">
+          <BingoGrid />
+        </div>
+      </section>
     </main>
 
     <SideDrawer :open="drawerOpen" @close="drawerOpen = false" />
@@ -74,5 +81,19 @@ const drawerOpen = ref(false)
 
 .main-content {
   padding: 24px 16px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #666;
+  margin: 0 0 20px;
+  letter-spacing: 0.5px;
+}
+
+.grid-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
 }
 </style>
