@@ -24,6 +24,11 @@ const drawerOpen = ref(false)
           <BingoGrid />
         </div>
       </section>
+
+      <!-- 捲動測試用的空白區域 -->
+      <section class="filler-section">
+        <p class="filler-text">往下滑看看圓點的變化</p>
+      </section>
     </main>
 
     <SideDrawer :open="drawerOpen" @close="drawerOpen = false" />
@@ -95,5 +100,20 @@ const drawerOpen = ref(false)
   display: flex;
   justify-content: center;
   padding: 20px 0;
+}
+
+.filler-section {
+  margin-top: 60px;
+  height: 900px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.filler-text {
+  font-size: 13px;
+  color: #ccc;
+  letter-spacing: 0.8px;
+  padding-top: 8px;
 }
 </style>
