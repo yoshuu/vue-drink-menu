@@ -2,6 +2,8 @@
 
 飲品選單 — Vue 3 前端作業
 
+已經部署到 vercel 上面：https://vue-drink-menu.vercel.app/
+
 ## 技術選型
 
 - Vue 3 Composition API（`<script setup>`）
