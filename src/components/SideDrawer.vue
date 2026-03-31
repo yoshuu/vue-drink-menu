@@ -1,4 +1,7 @@
 <script setup>
+import menuData from '../data/menuData.js'
+import MenuItem from './MenuItem.vue'
+
 defineProps({ open: Boolean })
 const emit = defineEmits(['close'])
 </script>
@@ -16,6 +19,17 @@ const emit = defineEmits(['close'])
         <span class="drawer-title">選單</span>
         <button class="drawer-close" @click="emit('close')">✕</button>
       </div>
+
+      <!-- 階層選單 -->
+      <nav class="drawer-nav">
+        <ul class="menu-list">
+          <MenuItem
+            v-for="item in menuData"
+            :key="item.key"
+            :item="item"
+          />
+        </ul>
+      </nav>
     </div>
   </Transition>
 </template>
@@ -65,6 +79,18 @@ const emit = defineEmits(['close'])
   cursor: pointer;
   padding: 4px;
   line-height: 1;
+}
+
+.drawer-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 /* 過場動畫 */
