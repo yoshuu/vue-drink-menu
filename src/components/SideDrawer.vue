@@ -1,13 +1,36 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import menuData from '../data/menuData.js'
 import MenuItem from './MenuItem.vue'
 
 defineProps({ open: Boolean })
 const emit = defineEmits(['close'])
 
-const activeKey = ref(null)
+// 記憶功能：activeKey 從 localStorage 讀取，變動時同步寫回
+const activeKey = ref(localStorage.getItem('menu_active_key') || null)
+
+// 展開的節點 key 列表（每層只展開一個）
 const expandedKeys = ref([])
+
+// 開啟時還原上次選取項目的祖先路徑，讓選取項可見
+onMounted(() => {
+  if (activeKey.value) {
+    const ancestors = findAncestors(activeKey.value, menuData)
+    if (ancestors) expandedKeys.value = ancestors
+  }
+})
+
+// 找出 key 到根的祖先 key 陣列
+function findAncestors(key, nodes, path = []) {
+  for (const node of nodes) {
+    if (node.key === key) return path.map(n => n.key)
+    if (node.children) {
+      const found = findAncestors(key, node.children, [...path, node])
+      if (found) return found
+    }
+  }
+  return null
+}
 
 function findItemByKey(key, nodes) {
   for (const node of nodes) {
@@ -40,6 +63,7 @@ function collapseSubtree(item) {
 
 function handleToggle(item) {
   activeKey.value = item.key
+  localStorage.setItem('menu_active_key', item.key)
 
   if (!item.children?.length) return
 
